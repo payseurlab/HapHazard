@@ -1,0 +1,231 @@
+HAPHAZARD INPUT FILE
+
+This file will serve as a template for HapHazard input. The lines will be read by a Perl driving
+script and used for input by HapHazard. Please read the instructions below.
+ 
+INSTRUCTIONS:
+
+Lines that begin with a '>' will be read as input. All other lines will be ignored and can be used 
+make notes or comments. The lines already contained in the file contain basic instructions and labels
+for lines of input. For more detailed instruction please see the HapHazard manual.
+
+HapHazard requires that all parameters be entered in the correct order.
+
+*** DO NOT DELETE OR ALTER THE ORDER OF THE INPUT PARAMETERS! *** 
+
+If you do so, HapHazard will likely crash or not run as expected. It is recommended that you maintain
+an unaltered template version of this file in case errors are made while altering the file for
+various experiments.
+
+Variable names below are on comment lines and named in ALL_CAPS_WITH_UNDERSCORES_FOR_SPACES to 
+distinguish them from variable types given in lowercase letters surrounded by carrots, <>. 
+Descriptions or instructions are given on lines following the variable name.
+
+Enter your variables on a line following the variable type after the '>' using the type 
+indicated above it. Leave a space between the '>' and the value Note: the term double, if you are not 
+familiar with it indicates a decimal number. The term double is used by computer scientists to indicate
+memory size andprecision. Don't worry about it, just enter a decimal.
+
+List variables are given one line with individual variables separated by spaces. Be aware of when # lists 
+need to correspond to one another. Many are warned of below, see the manual for details.
+
+This format can be tedious. Please take some extra time to prepare your list of parameters
+before entering them to avoid errors.
+
+
+END OF INSTRUCTIONS.
+
+EXPERIMENT_NAME
+This is a label for your experiment and will be used to name output files and directories.
+<text>
+
+> Homer
+
+NUMBER_OF_SIMULATIONS
+The total number of simulations you would like to run
+If running jobs in parallel on a computer cluster, normally this should be set to 1.
+<integer>
+
+> 1
+
+NUMBER_OF_GENERATIONS
+The total number of generations you would like to run in each simulation
+<integer>
+
+> 500
+
+NUMBER_OF_DEMES
+The number of demes found in your metapopulation, ignoring source populations
+<integer>
+
+> 1
+
+DEME_SIZES
+The number of individuals found in each deme. Enter as a list on one line separated by spaces.
+Make sure the number of list entries matches the number of demes.
+<integer_list>
+
+> 500
+
+NUMBER_OF_ANCESTRIES
+The number of ancestries that exist in the population.
+
+> 2
+
+ANCESTRY_FREQUENCIES
+A list of each ancestry's frequency by deme. List each ancestry as they exist in each deme.
+The ancestry frequencies in each deme MUST SUM TO 1.0.
+For example: ancesty1_deme1, ancestry2_deme1, ancestry1_deme2, ancestry2_deme2, etc.
+<double_list>
+
+> 0.5 0.5
+MATING_SYSTEM
+The type of sex determination and mating system
+Enter: 0 for Hermaphrodites, 1 for XX females and XY males, or 2 for WZ females and ZZ males
+<integer>
+
+> 1
+
+MIGRATION_RATES
+The proportion of individuals exchanged between pairs of demes each generation. Demes receive
+N* m/2 individuals from neighboring demes. Including migration with source populations, there
+should be the number of demes plus one migration rates. If you do not wish to include source
+populations, the first and last entry should be 0.
+<double_list>
+
+> 0 0
+
+NUMBER_OF_CHROMOSOMES
+The number of chromosomes per haplotype. This includes up to one pair of sex chromosomes and
+one cytoplasmic chromosome.
+<integer>
+
+> 3
+
+RECOMBINATION_MODEL
+This parameter toggle the type of recombination used in the simulations
+0 = one crossover per chromosome
+1 = Poisson crossovers, no interference
+2 = Gamma Interference
+<integer>
+
+> 1
+
+CHROMOSOME_TYPES
+List the types of chromosomes used in the simulation. This list must correspond with other
+chromosome parameter lists.
+IMPORTANT NOTE: the sexchromosome pair, if used MUST be listed first, followed by any number of 
+autosomes, and the cytoplams MUST be listed last
+Options:<0> = autosomal pair, <2> = XY sex chromosome pair, <4> = ZW sex chromosome pair,  <5> = 
+mitochondrion, <6> = chloroplast, <7> = paternally inherited cytoplasm
+<integer_list>
+
+> 2 0 5
+
+CHROMOSOME_LENGTHS
+List the genetic length, in Morgans, of each chromosome in the same order the types appear in.
+The cytoplasm must be set to length 0.
+<double_list>
+
+> 1.0 1.0 0
+
+PSEUDO_AUTOSOMAL_REGION
+Set the genetic length of the pseudoautosomal region. In males, recombination between the X and Y
+is restricted to this fraction of the XY pair. If you wish to ignore it, set it to 0.
+<double>
+
+> 0.001
+
+NUMBER_OF_PHENOTYPES
+The number of phenotypes to be modelled in the simulation. By default, simulations have three
+phenotypes: reproductive fitness, developmental fitness, and environmental fitness.
+If you wish to track additional phenotypes, as defined by your genes, enter a number greater than
+three, to accept only the default phenotypes (which you may ignore if you wish) enter a three.
+<integer>
+
+> 6
+
+EXPECTED_PHENOTYPIC_VALUES
+List the expected value of each phenotype. The genetic effects will be added later.
+See the manual for the phenotypic model being used. The fitnesses will be set to a
+expected value of 1.0 automatically. Only list the extra phenotypes you have included.
+If you have not added any phenotypes beyond three, the list will be ignored.
+<double_list>
+
+> 1.0 1.0 1.0
+
+NUMBER_OF_GENES
+Enter the number of genes you wish to define in the experiment.
+<integer>
+
+> 2
+
+GENE_PARAMETERS
+For each gene you wish to describe, list:
+its chromosome (the index in the genome list, 0...n-1)
+its position in Morgans, 
+the index of the phenotype it affects, 
+then the additive effect on the phenotype for each ancestry. 
+Make sure you list add've effects for each ancestry.
+Make sure the number of lines matches the number of genes specified above.
+Otherwise, the program will crash, or run improperly.
+<integer> <double> <integer> <double_list>
+
+Chr Pos Phen Add've_FX{by anc ... }
+> 1 0.25 0 0.0 0.0
+> 1 0.75 0 0.0 0.0
+
+NUMBER_OF_INTERACTIONS
+Indicate how many epistatic interactions you would like to model.
+<integer>
+
+> 1
+
+GENETIC_INTERACTIONS
+Now we will list definitions of the interactions
+On a single line for each interaction, list
+The index of the first gene followed by the second. The index is the number, 0...n-1, of the
+gene in the list that that you specified earlier.
+Next list the ancestries of each gene that interacts in the same order.
+Follow this by the maximum phenotypic effect allowed for the loci (see manual for details)
+Next is the index of the phenotype the interaction effects.
+Finally, indicate the type of model you would like the interaction to follow from:
+0 = recessive, 1 = dominant, 2 = dom-rec, 3 = additive (see the manual for details)
+<integer> <integer> <integer> <integer> <double> <integer> <integer>
+
+Gene1 Gene2 Anc1 Anc2 MaxFX Phen Model
+> 0 1 0 1 -0.5 0 1
+
+SAMPLE_SIZE
+Enter the number of individuals you would like to collect from each deme when summary statistics
+are calculated
+<integer>
+
+> 10
+
+MARKER_SPACING
+Indicate the size of the interval in Morgans between genetic markers. 
+<double>
+
+> 0.001
+
+SUMMARY_GENERATIONS
+List the generations, 0...t-1, in which you would like to collect summary statistics.
+At the end of the list, include a number outside the range (this tells the program to stop
+reading the list)
+<integer_list>
+
+> 499 9999999
+
+SUMMARY_STATS
+List a boolean value, 0 = false, 1 = true, to turn off or on (respectively) the summary statistics
+The order of the list is:
+Geographic clines, Geographic genotypic clines, Ancestry Blocks
+<boolean>
+
+> 1 1 1 1 1 1
+
+And that's it!
+
+END INPUT
+
