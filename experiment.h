@@ -16,8 +16,6 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-#include <sqlite3.h>
-
 #include "junction.h"
 #include "cnode.h"
 #include "chromosome.h"
@@ -63,7 +61,7 @@ class Experiment
         void textMarkers(std::string, std::string);
         const char* makeFileName(std::string);
         const char* makeMarkerFileName(std::string);
-        const char* makeBlockFileName(std::string, int);
+        std::string makeBlockFileName(std::string, int);
         void makeMarkers(double s);
 
         void summary(Individual**);
@@ -191,7 +189,7 @@ void Experiment::makeDescFile()
     std::stringstream filename;
     filename <<  m_experiment_name << "_" << m_job_id << "/" << m_experiment_name << "." << appendix;
     std::string desc_file = filename.str();
-    //std::cout << desc_file << std::endl;
+    std::cout << desc_file << std::endl;
 
     description.open(desc_file.c_str(), std::ios_base::trunc);
 
@@ -583,12 +581,12 @@ const char* Experiment::makeMarkerFileName(std::string e )
 }
 
 // MAKE A MARKER FILENAME FOR OUTPUT WITH EXTENSION E
-const char* Experiment::makeBlockFileName(std::string e, int c)
+std::string Experiment::makeBlockFileName(std::string e, int c)
 {
-    std::stringstream fileString;
-
+    std::stringstream fileString; 
+    
     fileString << m_experiment_name << "_" << m_job_id << "/BL_CHR" << c << "/" << m_sim_number << "." << g_generation << "." << e ;
-
+    std::cout << "EX_589:" << fileString.str() << std::endl;
     std::string file = fileString.str();
 
     std::ofstream bf_list;
@@ -596,7 +594,7 @@ const char* Experiment::makeBlockFileName(std::string e, int c)
     bf_list << file.c_str() << "," << m_marker_spacing << "," << m_chromosome_lengths[c] << std::endl;
     bf_list.close();
 
-    return file.c_str();
+    return file;
 }
 
 
@@ -607,10 +605,10 @@ void Experiment::blockSummary(Individual** sample)
     std::cout << "Block Summary: " << std::endl;
     for(int c = 0 ; c < m_number_of_chromosomes ; c++ )
     {
-        const char* block_file = makeBlockFileName(e, c);
+        std::string block_file = makeBlockFileName(e, c);
 
         std::cout << block_file << std::endl;
-        m_os_blocks.open(block_file);
+        m_os_blocks.open(block_file.c_str());
         m_os_blocks << "Deme,Individual,Haplotype,Chromosome,Type,Ancestry,Start,Start_Jun,Start_Born,End,Length" << std::endl;
         if( m_chromosome_types[c] != M && m_chromosome_types[c] != C && m_chromosome_types[c] != CP )
         {
