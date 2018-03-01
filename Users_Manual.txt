@@ -1,9 +1,28 @@
-# HapHazard
-The HapHazard genomic ancestry simulator
+# HapHazard User's Manual
+
+Table of Contents
+I. Introduction
+II. Setup and Getting Started
+III. Input
+IV. Output
+V. Usage Guidelines
+VI. Literature Cited
+
+I. Introduction
+
+The HapHazard genomic ancestry simulator is a forward-in-time, individual based, population genomics simulator that was developed to study the effect of selection on patterns of genomic ancestry in hybrid zones. It was first described in:
+
+Hvala JA, Payseur BA, Frayer ME. (2018). Signature of Hybridization and Speciation in Genomic Patterns of Ancestry. Evolution (in press).
+
+With that goal in mind, it is capable of simulating complex demographic scenarios, primarily the stepping stone cline model (Feldman and Christiansen 1975), and several genetic architectures of selection from single gene models to epistatic networks. Most importantly, HapHazard uses ancestry junctions (Fisher 1953) to model the genome as a mosaic of ancestry tracts (or blocks). In hybrids, recombination between chromosomes segments from different ancestries produces junctions, which define the boundaries of ancestry tracts. Junctions are then inherited like point mutations, and can spread through the population to fixation or become lost. Ignoring the details of sequence polymorphisms allows efficient computation of whole chromosomes and leaves room for simulating other complexities such as demography and selection.
+
+II. Setup and Getting Started
 
 Dependencies:
 GNU scientific library: last compiled with v2.2 downloaded from http://ftp.wayne.edu/gnu/gsl/
 Perl 5 (or later version)
+Linux (we used Ubuntu 14.04)
+Cygwin (if using Windows)
 
 Installation:
 1. Download the zip file from this repsoitory.
@@ -14,8 +33,7 @@ Installation:
     The link command -L/usr/local/lib links the compilation to gsl's default installation. If you've chosen to install it
     elsewhere change this command appropriately. This command should produce an executable file named 'HapHazard'
 
-Setting your First (Test) Run
-
+Setting your First (Test) Run:
 The installation comes with the file 'HH_template.inp' which serves as an input template. The default parameters in it
 can be used to run a test simulation.
 
@@ -23,7 +41,7 @@ can be used to run a test simulation.
    $ perl MakeHapHazInp.pl HH_template.inp
    This command will run the input generation by processing the parameters listed in "HH_templatr.inp" and formatting them into a list that HapHazard can process which is stored in a file called "Homer.inp" The file is named "Homer.inp" because "Homer" is the experiment name parameter given in "HH_template.inp". Variables and default parameters for HapHazard are listed in "HH_template.inp" with brief explanations and instructions for how to use them.
    
-2. To run Haphazard (on Linux or Unix) type:
+2. To run Haphazard (on Linux) type:
    $ ./HapHazard Homer.inp 0 555
    On windows, simply omit the "/." symbol. HapHazard requires command line parameters to run. The first of the name of the input file as the first command line parameter, here it's "Homer.inp". This will vary depending on how you name your experiments. Next, you must specify a simulation number, in this case "0", and a random seed number, here it's "555". You can change these last two, but make sure that no two simulations have the same number or random seed. Having the same number will cause previous results to be overwritten, and any two simulations with exactly the same seed numbers (and parameter values) will be exact copies of each other. 
    To verify that the simulation is running properly check the output. The first line should say "HapHazard v1.0". The output should look like the contents of the "HapHazard_test_output.txt" file in this repository.
