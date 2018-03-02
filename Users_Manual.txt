@@ -1,49 +1,638 @@
-# HapHazard User's Manual
+# HapHazard User Manual
 
-Table of Contents
-I. Introduction
-II. Setup and Getting Started
-III. Input
-IV. Output
-V. Usage Guidelines
+Contents:
+I. Introduction.....................................(line 12)
+II. Setup and Getting Started.......................(line 29)
+III. Input..........................................(line 91)
+IV. Output..........................................(line 527) 
+V. Usage and Runtime Recommendations
 VI. Literature Cited
 
-I. Introduction
+I. Introduction:
+The HapHazard genomic ancestry simulator is a foward-in-time, individual based, population genomic
+simulator of genomic ancestry. It was developed to study the effects of selection in hybrid zones
+and is first described in:
 
-The HapHazard genomic ancestry simulator is a forward-in-time, individual based, population genomics simulator that was developed to study the effect of selection on patterns of genomic ancestry in hybrid zones. It was first described in:
+Hvala JA, Payseur BA, Frayer ME. (2018). Signatures of Hybridization and Speciation in Genomic
+Patterns of Ancestry. Evolution (in press).
 
-Hvala JA, Payseur BA, Frayer ME. (2018). Signature of Hybridization and Speciation in Genomic Patterns of Ancestry. Evolution (in press).
-
-With that goal in mind, it is capable of simulating complex demographic scenarios, primarily the stepping stone cline model (Feldman and Christiansen 1975), and several genetic architectures of selection from single gene models to epistatic networks. Most importantly, HapHazard uses ancestry junctions (Fisher 1953) to model the genome as a mosaic of ancestry tracts (or blocks). In hybrids, recombination between chromosomes segments from different ancestries produces junctions, which define the boundaries of ancestry tracts. Junctions are then inherited like point mutations, and can spread through the population to fixation or become lost. Ignoring the details of sequence polymorphisms allows efficient computation of whole chromosomes and leaves room for simulating other complexities such as demography and selection.
+To pursue this goal, HapHazard was developed to include complex population structures, in particular
+the stepping stone cline model (Feldman and Christiansen 1975). It also includes multiple genetic
+architectures of selection from single genes to networks with epistasis. Most importantly, HapHazard
+uses ancestry junctions (Fisher 1949) to model hybrid genomes as mosaics of ancestry. Junctions arise
+when recombination occurs between chromosome segments from different ancestries. Junctions accordingly
+define the boundaries between ancestry tracts (or blocks). By using junctions to summarize the
+ancesty of genomic tracts and ignoring sequence details, HapHazard can quickly and efficiently model
+the behavior of admixing genomes with room left over for other complexities such as selection and
+demography.
 
 II. Setup and Getting Started
+
+System Requirements:
+Linux (recommended, we used Ubuntu 14.04)
+Cygwin (if using Windows)
+2 GB of RAM (at least)
 
 Dependencies:
 GNU scientific library: last compiled with v2.2 downloaded from http://ftp.wayne.edu/gnu/gsl/
 Perl 5 (or later version)
-Linux (we used Ubuntu 14.04)
-Cygwin (if using Windows)
 
 Installation:
-1. Download the zip file from this repsoitory.
+
+1. Download the zip file from this repsoitory (github.com/payseurlab/HapHazard)
+
 2. Navigate to the folder containing the zip in the terminal and unzip the file using the command:
+
     $ unzip HapHazard-master.zip
-3. Compile the program from source using the g++ compiler and linking GSL using the command
-    $ g++ -L/usr/local/lib main.cpp -o HapHazard -lgsl -lgslcblas -lm
-    The link command -L/usr/local/lib links the compilation to gsl's default installation. If you've chosen to install it
-    elsewhere change this command appropriately. This command should produce an executable file named 'HapHazard'
 
-Setting your First (Test) Run:
-The installation comes with the file 'HH_template.inp' which serves as an input template. The default parameters in it
-can be used to run a test simulation.
+3. Compile the program from source using the g++ compiler and linking GSL using the command:
+		$ g++ -L/usr/local/lib main.cpp -o HapHazard -lgsl -lgslcblas -lm
+	The link command -L/usr/local/lib links the compilation to gsl's default installation. If 
+	you've chosen to install it elsewhere change this command appropriately. This command 
+	should produce an executable file named 'HapHazard'
 
-1. Install Perl of you have not already, and run the input generator script by typing:
+Setting your First (Test) Run
+
+The installation comes with the file 'HH_template.inp' which serves as an input template. The default 
+parameters in it can be used to run a test simulation. It also contains instructions for the proper
+input format. This file and its instructions are discussed below (see Input).
+
+1. Install Perl if you have not already, and run the input generator script by typing:
    $ perl MakeHapHazInp.pl HH_template.inp
-   This command will run the input generation by processing the parameters listed in "HH_templatr.inp" and formatting them into a list that HapHazard can process which is stored in a file called "Homer.inp" The file is named "Homer.inp" because "Homer" is the experiment name parameter given in "HH_template.inp". Variables and default parameters for HapHazard are listed in "HH_template.inp" with brief explanations and instructions for how to use them.
+This command will run the input generation by processing the parameters listed in "HH_templatr.inp" 
+and formatting them into a list that HapHazard can process which is stored in a file called "Homer.inp"
+The file is named "Homer.inp" because "Homer" is the experiment name parameter given in "HH_template.inp".
+Variables and default parameters for HapHazard are listed in "HH_template.inp" with brief explanations and 
+instructions for how to use them.
    
 2. To run Haphazard (on Linux) type:
-   $ ./HapHazard Homer.inp 0 555
-   On windows, simply omit the "/." symbol. HapHazard requires command line parameters to run. The first of the name of the input file as the first command line parameter, here it's "Homer.inp". This will vary depending on how you name your experiments. Next, you must specify a simulation number, in this case "0", and a random seed number, here it's "555". You can change these last two, but make sure that no two simulations have the same number or random seed. Having the same number will cause previous results to be overwritten, and any two simulations with exactly the same seed numbers (and parameter values) will be exact copies of each other. 
-   To verify that the simulation is running properly check the output. The first line should say "HapHazard v1.0". The output should look like the contents of the "HapHazard_test_output.txt" file in this repository.
+
+   	$ ./HapHazard Homer.inp 0 555
+
+On windows, simply omit the "/." symbol. HapHazard requires command line parameters to run. The first of 
+the name of the input file as the first command line parameter, here it's "Homer.inp". This will vary 
+depending on how you name your experiments. Next, you must specify a simulation number, in this case "0", 
+and a random seed number, here it's "555". You can change these last two, but make sure that no two 
+simulations have the same number or random seed. Having the same number will cause previous results to be 
+overwritten, and any two simulations with exactly the same seed numbers (and parameter values) will be 
+exact copies of each other. 
+
+   To verify that the simulation is running properly check the output. The first line should say 
+"HapHazard v1.0". The output should look like the contents of the "HapHazard_test_output.txt" file in this 
+repository.
    
-3.After finishing, their should be a folder called "Homer_0" in the HapHazard-master directory. In it, there should be the files. "Homer.desc" list the parameters and their values that were used in the experiment. "Homer.0.499.clines" contains a list of the counts of each ancestry by chromosome and marker position, for each deme. The name of the file indicates that these were experiment Homer, simulation number 0, sample from generation 499, and the data are for measuring clines indicated by the extension. The file ending with ".gclines", contains the same but the congress are genotypes. There should also be three folders, "BL_CHR0", "BL_CHR1", and "BL_CHR2".
+3.After finishing, there should be a folder called "Homer_0" in the HapHazard-master directory. In it, 
+there should be the files. "Homer.desc" list the parameters and their values that were used in the experiment. "Homer.0.499.clines" contains a list of the counts of each ancestry by chromosome and marker position, for 
+each deme. The name of the file indicates that these were experiment Homer, simulation number 0, sample from 
+generation 499, and the data are for measuring clines indicated by the extension. The file ending with 
+".gclines", contains the same but the congress are genotypes. There should also be three folders, "BL_CHR0", 
+"BL_CHR1", and "BL_CHR2". These folders contain the block length and marker data for the chromosomes indicated 
+by the folder's name.
+
+III. Input
+
+Once you have verified that HapHazard works, you can start setting up your own experiments. To do this you 
+will have to understand what HapHazard can do, and how to format the input to make HapHazard do it. This
+section will show you how it's done by walking you through the input template file.
+
+Input Template File Overview
+
+"HH_template.inp", henceforth called the template, servers as a way to help users organize the input so that
+the actual input file that HapHazard takes can be generated by the Perl script "MakeHapHazInp.pl", henceforth
+referred to as the generator script. At the beginning of the template is the title, a brief intro, and a set 
+of general instructions that we explain in a little more detail here. In this manual we'll separate lines
+quoted from other files like this:
+
+**********************************************************************************************************
+**********************************************************************************************************
+|
+|HAPHAZARD INPUT FILE
+|
+|This file will serve as a template for HapHazard input. The lines will be read by a Perl driving
+|script and used for input by HapHazard. Please read the instructions below. 
+|
+**********************************************************************************************************
+
+Here is the first set of instructions from the template. 
+
+**********************************************************************************************************
+**********************************************************************************************************
+|INSTRUCTIONS:
+|
+|Lines that begin with a '>' will be read as input. All other lines will be ignored and can be used 
+|make notes or comments. The lines already contained in the file contain basic instructions and labels
+|for lines of input. For more detailed instruction please see the HapHazard manual.
+|
+|HapHazard requires that all parameters be entered in the correct order.
+|
+|*** DO NOT DELETE OR ALTER THE ORDER OF THE INPUT PARAMETERS! *** 
+|
+|If you do so, HapHazard will likely crash or not run as expected. It is recommended that you maintain
+|an unaltered template version of this file in case errors are made while altering the file for
+|various experiments.
+|
+|Variable names below are on comment lines and named in ALL_CAPS_WITH_UNDERSCORES_FOR_SPACES to 
+|distinguish them from variable types given in lowercase letters surrounded by carrots, <>. 
+|Descriptions or instructions are given on lines following the variable name.
+|
+|Enter your variables on a line following the variable type after the '>' using the type 
+|indicated above it. Leave a space between the '>' and the value Note: the term double, if you are not 
+|familiar with it indicates a decimal number. The term double is used by computer scientists to indicate
+|memory size andprecision. Don't worry about it, just enter a decimal.
+|
+|List variables are given one line with individual variables separated by spaces. Be aware of when # lists 
+|need to correspond to one another. Many are warned of below, see the manual for details.
+|
+|This format can be tedious. Please take some extra time to prepare your list of parameters
+|before entering them to avoid errors.
+|
+|
+|END OF INSTRUCTIONS.
+|
+************************************************************************************************************
+
+	Strictly speaking, the generator script will take any line with a '>' and try to generate the input
+file using it. As mentioned, reordering the parameters will likely cause runtime errors and crashes of
+HapHazard. Further, some parameters affect how the generator reads following lines of input (as we'll see
+below) so be careful and pay close attention to where input parameters are placed.
+
+The first input parameter is the Experiment Name.
+
+************************************************************************************************************
+************************************************************************************************************
+|EXPERIMENT_NAME
+|This is a label for your experiment and will be used to name output files and directories.
+|<text>
+|
+|>MyExperiment
+|
+************************************************************************************************************
+
+Very straightforward. Just make sure to give your experiment a clearly readable and recognizable name. It 
+will be used to make a lot of files and folders for your results.
+
+Next is the number of simulations.
+
+************************************************************************************************************
+************************************************************************************************************
+|NUMBER_OF_SIMULATIONS
+|The total number of simulations you would like to run
+|If running jobs in parallel on a computer cluster, normally this should be set to 1.
+|<integer>
+|
+|> 1
+|
+************************************************************************************************************
+
+You can adjust this to run multiple replicates of your experiment. But, beware, depending on your parameter
+choices running 100's or 1000's can take a while. Many of the experiments run in our study were done using
+a distrubuted computing framework and were ran in parallel. It would be good to keep this number small for
+a test run or two to see how long one simulation takes.
+
+************************************************************************************************************
+************************************************************************************************************
+|NUMBER_OF_GENERATIONS
+|The total number of generations you would like to run in each simulation
+|<integer>
+|
+|> 500
+|
+************************************************************************************************************
+
+HapHazard generations are discrete. After populations of individuals are setup, the generation
+of each deme has several steps. First, Individuals are chosen randomly to migrate to adjacent demes. Next, 
+Individuals are chosen randomly to make mating pairs. How pairs form depends on the 
+mating system you select (see below). Once chosen, an individual is either accepted or rejected with a
+probability proportional to its reproductive fitness, as determined by other factors. Once two individuals 
+are accepted, they each pass half their genome to one offspring. Recombination occurs during this mating step 
+(more about recombination below). After mating the parents are returned to the population and can be selected 
+again. This sample-accept-recombine reproduction is repeated until a new generation of offspring reaches the
+carrying capacity of the deme or population.
+
+************************************************************************************************************
+************************************************************************************************************
+|NUMBER_OF_DEMES
+|The number of demes found in your metapopulation, ignoring source populations
+|<integer>
+|
+|> 1
+|
+|DEME_SIZES
+|The number of individuals found in each deme. Enter as a list on one line separated by spaces.
+|Make sure the number of list entries matches the number of demes.
+|<integer_list>
+|
+|> 500
+|
+************************************************************************************************************
+
+The number of demes is the number of "demes" or "sub-populations" in the simulation. Demes contain the specified
+number of individuals you specify in the list of deme sizes below it. These numbers are the carrying capacities
+described previously.
+
+!!!!! VERY IMPORTANT !!!!!
+The number of sizes in the list, must match the number of demes.
+
+When the generator script reads the number of demes, call it 5, it then looks for 5 deme sizes on the next line.
+If those numbers are not there, the simulator will not be able to assign a deme size to missing deme sizes and
+will crash. If you have 5 demes, your input must look like something like this:
+
+************************************************************************************************************
+************************************************************************************************************
+|NUMBER_OF_DEMES
+|The number of demes found in your metapopulation, ignoring source populations
+|<integer>
+|
+|> 5
+|
+|DEME_SIZES
+|The number of individuals found in each deme. Enter as a list on one line separated by spaces.
+|Make sure the number of list entries matches the number of demes.
+|<integer_list>
+|
+|> 100 200 300 400 500
+|
+************************************************************************************************************
+
+You can list any integers you like, they need not be the same, as long as the number of them is correct.
+
+************************************************************************************************************
+************************************************************************************************************
+|NUMBER_OF_ANCESTRIES
+|The number of ancestries that exist in the population.
+|
+|> 2
+|
+|ANCESTRY_FREQUENCIES
+|A list of each ancestry's frequency by deme. List each ancestry as they exist in each deme.
+|The ancestry frequencies in each deme MUST SUM TO 1.0.
+|For example: ancesty1_deme1, ancestry2_deme1, ancestry1_deme2, ancestry2_deme2, etc.
+|<double_list>
+|
+|> 0.5 0.5
+|
+************************************************************************************************************
+
+Above we state the number of ancestries that are included in the experiment and the initial ancestry
+frequencies in the first generation. These frequencies will (very most likely) change as the simulator runs.
+
+Similarly, the number of ancestries and the list of ancestry frequencies by deme must correspond to each other.
+But, there must be as many as the number of ancestries times the number of demes in the ancestry list. So a
+simulation with 3 ancestries and 4 demes needs twelve floating point numbers in the ancestry frequency list.
+Further, each successive group of three, which corresponds to a deme MUST SUM TO 1.0.
+
+Like this:
+
+************************************************************************************************************
+************************************************************************************************************
+|NUMBER_OF_ANCESTRIES
+|The number of ancestries that exist in the population.
+|
+|> 3
+|
+|ANCESTRY_FREQUENCIES
+|A list of each ancestry's frequency by deme. List each ancestry as they exist in each deme.
+|The ancestry frequencies in each deme MUST SUM TO 1.0.
+|For example: ancesty1_deme1, ancestry2_deme1, ancestry1_deme2, ancestry2_deme2, etc.
+|<double_list>
+|
+|> 0.25 0.5 0.25 0.1 0.1 0.8 0.3 0.3 0.4 0.5 0.5 0.0
+|
+************************************************************************************************************
+
+Notice how each group of three sums to 1.0 and there are 12 frequencies listed total. In each group of three,
+the first will be indexed as 0, the second as 1, and the third as 2 in the simulator and output that follows.
+So above, the frequency of ancestry 0 has initial frequencies in Demes 1-4 of 0.25, 0.1, 0.3, and 0.5. Note 
+that the last deme has 0 of ancestry 2, and necessarily, ancestries 0 and 1 sum to 1.0. Though you need not 
+a decimal point for 0, we do to remind ourselves that we always need a floating point (decimal) number. And
+just to make sure its clear, they should all be positive and between 0 and 1 inclusively.
+
+!!!!! IMPORTANT NOTE !!!!!
+The simulations conducted to date have been performed with only 2 ancestries. Scenarios with more than 2 have
+not been tested and we don't know for sure if the simulation runs correctly or not.
+
+************************************************************************************************************
+************************************************************************************************************
+|The type of sex determination and mating system
+|Enter: 0 for Hermaphrodites, 1 for XX females and XY males, or 2 for WZ females and ZZ males
+|<integer>
+|
+|> 1
+|
+************************************************************************************************************
+
+HapHazard simulates matings between bisexual diploids. Further, sex chromosomes and cytoplasmic inheritance
+are included. 
+
+Model 0 -- Hermaphrodites contain only autosomes and cytoplasm is inherited from a random parent. 
+
+Model 1 -- XX females have two X chromosomes that can recombine normally. Whereas XY males have an X and a Y 
+that only recombine in a restricted PAR region. The PAR region is simulated by multiplying the genetic length
+of the X by a factor that reduces it to the desired size. Hence, the PAR is always on the 0 end of the 
+chromosome. In this model, cytoplasm is only inherited from females, unless the cytoplasm is designated as 
+pine chloroplast where it will be inherited from the male (see below).
+
+Model 2 -- WZ females and ZZ males. The effects of heterogamy are reversed for males and females. Cytoplasm
+is inherited from the female, unless its pine chloroplast.
+
+
+************************************************************************************************************
+************************************************************************************************************
+|MIGRATION_RATES
+|The proportion of individuals exchanged between pairs of demes each generation. Demes receive
+|N* m/2 individuals from neighboring demes. Including migration with source populations, there
+|should be the number of demes plus one migration rates. If you do not wish to include source
+|populations, the first and last entry should be 0.
+|<double_list>
+|
+|> 0.0 0.0
+|
+************************************************************************************************************
+
+Again, it is important to specify the correct number of migration rates which is the number of demes plus one. 
+In addition, their should always be a minimum of 2 numbers here since one deme could potentially recieve 
+migrants from ancestal source populations.
+
+The demographic model at this time only uses a stepping stone cline model (Feldmand and Christiansen 1975).
+There is a linear chain of demes between two source populations. Numbers specifies the migration rate between 
+a pair of adjacent demes. The first and last numbers in the list specify the migration rate between the flanking
+source populations. The first number on the left will specify migration rate with the source population of
+ancestry 0 and the last number will specify the migration rate with the source population for ancestry 1.
+
+In the migration step of each generation in the simulation, the simulator moves from left to right, randomly
+choosing and swapping a fraction of M/2 individuals from the two adjacent demes for each pair. For exchanges
+with source populations, individuals from the end deme are replaced with individuals that have pure ancestry
+and non-recombined chromosomes.
+
+!!!!! IMPORTANT NOTE !!!!!
+The behavior of >2 ancestries is untested. It is likely that no new migrants of ancestries 2 or higher would
+enter the popualtion because their sources are not defined.
+
+
+************************************************************************************************************
+************************************************************************************************************
+|NUMBER_OF_CHROMOSOMES
+|The number of chromosomes per haplotype. This includes up to one pair of sex chromosomes and
+|one cytoplasmic chromosome.
+|<integer>
+|
+|> 3
+|
+|RECOMBINATION_MODEL
+|This parameter toggle the type of recombination used in the simulations
+|0 = one crossover per chromosome
+|1 = Poisson crossovers, no interference
+|2 = Gamma Interference
+|<integer>
+|
+|> 1
+|
+|CHROMOSOME_TYPES
+|List the types of chromosomes used in the simulation. This list must correspond with other
+|chromosome parameter lists.
+|IMPORTANT NOTE: the sexchromosome pair, if used MUST be listed first, followed by any number of 
+|autosomes, and the cytoplams MUST be listed last
+|Options:<0> = autosomal pair, <2> = XY sex chromosome pair, <4> = ZW sex chromosome pair,  <5> = 
+|mitochondrion, <6> = chloroplast, <7> = paternally inherited cytoplasm
+|<integer_list>
+|
+|> 2 0 5
+|
+|CHROMOSOME_LENGTHS
+|List the genetic length, in Morgans, of each chromosome in the same order the types appear in.
+|The cytoplasm must be set to length 0.
+|<double_list>
+|
+|> 1.0 1.0 0
+|
+|PSEUDO_AUTOSOMAL_REGION
+|Set the genetic length of the pseudoautosomal region. In males, recombination between the X and Y
+|is restricted to this fraction of the XY pair. If you wish to ignore it, set it to 0.
+|<double>
+|
+|> 0.01
+|
+************************************************************************************************************
+
+The above block defines the chromosomes of the genome and their behaviors. 
+
+First we describe the number. Following this, the TYPES and LENGTHS must each have a number of entries that
+equals the number of chromosomes.
+
+!!!!! IMPORTANT !!!!!
+
+There MUST be at least THREE chromosomes, and they must be the sex chromosome first, the autosome, and the
+cytoplasm must be last. Additional autosomes, or even sex chromosomes, can be added to the middle. There can 
+be only one cytoplasm.
+
+The recombination model specifies that way recombination occurs. 
+
+Model 0 = only one crossover is allowed per chromosome
+Model 1 = the number of crossovers is drawn from a Poisson distribution and chromosomes are randomly placed
+with uniform probability along the rest of the chromsome
+Model 2 = Same as model 1, but the second and additional crossovers must be spaced according to a gamma
+distributed model of crossover interference
+
+Any chromosomes that are not needed can be set to a length of zero. When this happens, they don't recombine
+or accumulate junctions, and hence, don't affect the simulation, run time, or computer memory.
+
+
+************************************************************************************************************
+************************************************************************************************************
+|EXPECTED_PHENOTYPIC_VALUES
+|List the expected value of each phenotype. The genetic effects will be added later.
+|See the manual for the phenotypic model being used. The fitnesses will be set to a
+|expected value of 1.0 automatically. Only list the extra phenotypes you have included.
+|If you have not added any phenotypes beyond three, the list will be ignored.
+|<double_list>
+|
+|> 1.0 1.0 1.0
+|
+|NUMBER_OF_GENES
+|Enter the number of genes you wish to define in the experiment.
+|<integer>
+|
+|> 2
+|
+|GENE_PARAMETERS
+|For each gene you wish to describe, list:
+|its chromosome (the index in the genome list, 0...n-1)
+|its position in Morgans, 
+|the index of the phenotype it affects, 
+|then the additive effect on the phenotype for each ancestry. 
+|Make sure you list add've effects for each ancestry.
+|Make sure the number of lines matches the number of genes specified above.
+|Otherwise, the program will crash, or run improperly.
+|<integer> <double> <integer> <double_list>
+|
+|Chr Pos Phen Add've_FX{by anc ... }
+|> 1 0.25 0 0.0 0.0
+|> 1 0.75 0 0.0 0.0
+|
+|NUMBER_OF_INTERACTIONS
+|Indicate how many epistatic interactions you would like to model.
+|<integer>
+|
+|> 1
+|
+|GENETIC_INTERACTIONS
+|Now we will list definitions of the interactions
+|On a single line for each interaction, list
+|The index of the first gene followed by the second. The index is the number, 0...n-1, of the
+|gene in the list that that you specified earlier.
+|Next list the ancestries of each gene that interacts in the same order.
+|Follow this by the maximum phenotypic effect allowed for the loci (see manual for details)
+|Next is the index of the phenotype the interaction effects.
+|Finally, indicate the type of model you would like the interaction to follow from:
+|0 = recessive, 1 = dominant, 2 = dom-rec, 3 = additive (see the manual for details)
+|<integer> <integer> <integer> <integer> <double> <integer> <integer>
+|
+|Gene1 Gene2 Anc1 Anc2 MaxFX Phen Model
+|> 0 1 0 1 -0.5 0 1
+|
+|SAMPLE_SIZE
+|Enter the number of individuals you would like to collect from each deme when summary statistics
+|are calculated
+|<integer>
+|
+|> 10
+|
+|MARKER_SPACING
+|Indicate the size of the interval in Morgans between genetic markers. 
+|<double>
+|
+|> 0.01
+|
+|SUMMARY_GENERATIONS
+|List the generations, 0...t-1, in which you would like to collect summary statistics.
+|At the end of the list, include a number outside the range (this tells the program to stop
+|reading the list)
+|<integer_list>
+|
+|> 499 9999999
+|
+|SUMMARY_STATS
+|List a boolean value, 0 = false, 1 = true, to turn off or on (respectively) the summary statistics
+|The order of the list is:
+|Geographic clines, Geographic genotypic clines, Ancestry Blocks
+|<boolean>
+|
+|> 1 1 1 1 1 1
+|
+|And that's it!
+|
+|END INPUT
+|
+
+IV. Output
+
+In this section we'll walk through the folders ant files that are generated as output by our test run named
+"Homer".
+
+Let's say we ran our test run in a folder named "homer". This folder contains our executable, the
+input file, and the perl script 'haphazard_makemarkers.pl'.
+
+After running we'd add a folder called Homer_0 which would contain the output for the first experiment.
+Additional replicates 1-10 would be named Homer_1, Homer_2, ... Homer_10. There are two important files which 
+store the runtime parameters: Homer.desc contain a basic text output with all the parameters as they were read
+by HapHazard itself. Similarly, there is another file called Rvars.R which is an R script that contains a 
+small selection of parameter lists that can be loaded into R for an analysis pipeline.
+
+In addition to these two files, this Homer_0 folder contains output for the clines and genotype cline data.
+
+The file name contains information about its origin. 
+
+'Homer.0.499.clines' is from experiment "Homer", replicate number "0", sample at generation "499" (the 500th
+since the first generation is indexed as 0), and the extension indicates this is an allele frequency cline
+file.
+
+The clines file looks like this:
+
+
+
+************************************************************************************************************
+************************************************************************************************************
+|chr,pos,D0_A0,D0_A1
+|0,0,8,8
+|0,0.01,8,8
+|0,0.02,9,7
+|0,0.03,7,9
+|0,0.04,8,8
+|0,0.05,7,9
+|0,0.06,7,9
+|0,0.07,8,8
+|
+*************************************************************************************************************
+
+This is a comma-delimited text file that can be easily opened in a spreadsheet program or loaded into R as a
+dataframe. These list the counts of ancestry at a genomic position as detected in the samples taken in the 
+simulator. The headings are read as:
+
+chr = chromosome (the index number 0, 1, 2, ... etc.)
+pos = the position in Morgans on the chromosome.
+D0_A0 = frequency of Ancestry 0 in Deme 0
+D0_A1 = frequendy of Ancestry 1 in Deme 0
+
+The .gclines files are the same, but instead list "genotype" clines, counts of the number of ancestry 1 at each
+locus.
+
+Inside Homer_0 are additional folders, BL_CHR0, BL_CHR1, and BL_CHR2. Each folder contains the block files (ending
+with .bla) and marker files (ending with .mkr).
+
+The block files are the heart of HapHazard's output, its raison d'etre.
+
+Similar to the cline files, these are comma-delimited text and can be opened as spreadsheets or loaded into R
+as dataframes. Each line defines an ancestry block and contains info about its "starting" junction. The junction
+at the left or lowest genetic distance position of the block. The filename tells what is is and where it came from.
+
+0.499.bla is a block file for chromosome 0, generation 499 (aka 500). Be careful. Other replicates/simulations will
+name its block files the same way. Never remove them from their home directories unless you rename them to show where
+they came from.
+
+Here is an example:
+
+************************************************************************************************************
+************************************************************************************************************
+|Deme,Individual,Haplotype,Chromosome,Type,Ancestry,Start,Start_Jun,Start_Born,End,Length
+|0,0x9f43270,0x9b3eee8,0,2,1,0,0x99c75d0,0,0.00133017,0.00133017
+|0,0x9f43270,0x9b3eee8,0,2,0,0.00133017,0x273f1728,475,0.00347399,0.00214383
+|0,0x9f43270,0x9b3eee8,0,2,1,0.00347399,0x25cee910,484,0.00524139,0.0017674
+|0,0x9f43270,0x9b3eee8,0,2,1,0.00524139,0x255f8740,387,0.0191183,0.0138769
+|0,0x9f43270,0x9b3eee8,0,2,1,0.0191183,0x139e1790,98,0.0339613,0.0148431
+|0,0x9f43270,0x9b3eee8,0,2,0,0.0339613,0xb81aea0,21,0.0402307,0.00626932
+|0,0x9f43270,0x9b3eee8,0,2,1,0.0402307,0x1930a5b0,213,0.0416346,0.00140394
+|0,0x9f43270,0x9b3eee8,0,2,0,0.0416346,0x1888f9e8,164,0.0483484,0.00671378
+|0,0x9f43270,0x9b3eee8,0,2,1,0.0483484,0x291e6720,346,0.0546116,0.00626317
+|
+************************************************************************************************************
+
+The headings are:
+Deme = the deme from which this block was sampled
+
+Individual = a unique hexcode ID for the individual this block was found in. These addresses are unique to 
+each individual in the simulation during the given generation.
+
+Haplotype = another hexcode ID unique to each chromosome. The term haplotype was used just to avoid confusion
+with the next heading.
+
+Chromosome = the index of the chromosome, this reflects its position/order/type in the genome. 0 is always a
+sex chromosome.
+
+Type = the type of chromosome as an integer. See above section about chromosome types in input for type lables.
+
+Ancestry = the integer that identifies the ancestry on the block that follows this junction
+
+Start = the start (lowest) genetic positon in Morgans
+
+Start_Jun = a hexcode ID for the Junction itself, using this we can tell if other individuals share a junction
+that is identical by descent IBD
+
+Start_Born = the generation in which the first junction of this kind was born. This actually tells you the generation
+in which a recombination between two ancestries formed this junction.
+
+End = the position in Morgans at which the next junction occurs
+
+Length = the length of the ancestry block in Morgans (End - Start)
+
+
+
