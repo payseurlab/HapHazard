@@ -1,12 +1,10 @@
 # HapHazard User Manual
 
 Contents:
-I. Introduction.....................................(line 12)
-II. Setup and Getting Started.......................(line 29)
-III. Input..........................................(line 91)
-IV. Output..........................................(line 527) 
-V. Usage and Runtime Recommendations
-VI. Literature Cited
+I. Introduction.....................................(line 9)
+II. Setup and Getting Started.......................(line 32)
+III. Input..........................................(line 97)
+IV. Output..........................................(line 715) 
 
 I. Introduction:
 The HapHazard genomic ancestry simulator is a foward-in-time, individual based, population genomic
@@ -19,17 +17,22 @@ Patterns of Ancestry. Evolution (in press).
 To pursue this goal, HapHazard was developed to include complex population structures, in particular
 the stepping stone cline model (Feldman and Christiansen 1975). It also includes multiple genetic
 architectures of selection from single genes to networks with epistasis. Most importantly, HapHazard
-uses ancestry junctions (Fisher 1949) to model hybrid genomes as mosaics of ancestry. Junctions arise
+uses ancestry junctions (Fisher 1953) to model hybrid genomes as mosaics of ancestry. Junctions arise
 when recombination occurs between chromosome segments from different ancestries. Junctions accordingly
 define the boundaries between ancestry tracts (or blocks). By using junctions to summarize the
 ancesty of genomic tracts and ignoring sequence details, HapHazard can quickly and efficiently model
 the behavior of admixing genomes with room left over for other complexities such as selection and
 demography.
 
+Feldman, M. W., and F. B. Christiansen. 1974. The effect of population subdivision on two loci
+without selection. Genet. Res. 24: 151–62.
+
+Fisher, R. A. 1953. A fuller theory of junctions in inbreeding. Heredity 8: 187–197.
+
 II. Setup and Getting Started
 
 System Requirements:
-Linux (recommended, we used Ubuntu 14.04)
+Linux (recommended, we used Ubuntu 14.04 and later)
 Cygwin (if using Windows)
 2 GB of RAM (at least)
 
@@ -46,10 +49,11 @@ Installation:
     $ unzip HapHazard-master.zip
 
 3. Compile the program from source using the g++ compiler and linking GSL using the command:
-		$ g++ -L/usr/local/lib main.cpp -o HapHazard -lgsl -lgslcblas -lm
+		$ g++ -L/usr/local/lib main.cpp -o HapHazard -lgsl -lgslcblas -lm -std=c++11
 	The link command -L/usr/local/lib links the compilation to gsl's default installation. If 
 	you've chosen to install it elsewhere change this command appropriately. This command 
-	should produce an executable file named 'HapHazard'
+	should produce an executable file named 'HapHazard'. We also recommend using the c++11
+	standard to compile the simulator.
 
 Setting your First (Test) Run
 
@@ -82,7 +86,8 @@ exact copies of each other.
 repository.
    
 3.After finishing, there should be a folder called "Homer_0" in the HapHazard-master directory. In it, 
-there should be the files. "Homer.desc" list the parameters and their values that were used in the experiment. "Homer.0.499.clines" contains a list of the counts of each ancestry by chromosome and marker position, for 
+there should be the files. "Homer.desc" list the parameters and their values that were used in the experiment. 
+"Homer.0.499.clines" contains a list of the counts of each ancestry by chromosome and marker position, for 
 each deme. The name of the file indicates that these were experiment Homer, simulation number 0, sample from 
 generation 499, and the data are for measuring clines indicated by the extension. The file ending with 
 ".gclines", contains the same but the congress are genotypes. There should also be three folders, "BL_CHR0", 
@@ -423,18 +428,63 @@ equals the number of chromosomes.
 
 There MUST be at least THREE chromosomes, and they must be the sex chromosome first, the autosome, and the
 cytoplasm must be last. Additional autosomes, or even sex chromosomes, can be added to the middle. There can 
-be only one cytoplasm.
+be only one cytoplasm. This is for the sake of organization. Chromosomes are held in an ordered "list" and 
+the simulator expects to see a sex chromosome in the first position. Because the cytoplasm is unpaired, it is
+placed last, and also marks the end of the "list".
 
-The recombination model specifies that way recombination occurs. 
+RULES of INHERITANCE and RECOMBINATION
 
-Model 0 = only one crossover is allowed per chromosome
+When the simulator selects two parents to create an offspring, it generates a "gamete" from each parent. For
+each pair of chromosomes it will choose a chromosome to start with and it will decide how many crossovers, if
+any, will occur on the chromosome. If no crossovers occur, the simulator will copy the parental chromosome,
+essentially a list of junction positions and ancestries into the new gamete. If any crossovers DO occur, the 
+simulator will select their positions uniformly over the (genetic) length of the chromosome. Then, it scans 
+the parental chromsome, and will switch to the other chromosome in the pair in segements that correspond to
+the crossover events.
+
+Autosomes: These pair and recombine just as described above.
+
+Sex Chromosomes: These recombine just like autosomes when homogamic, but recombination will be restricted
+to a PAR when heterogamic. They also, depending on the specified Mating system, may determine the sexes of 
+individuals. W and Y chromosomes do carry a unique, unrecombinant W and Y chromsome ancestry.
+
+Cytoplasm: There must always be a cytoplasm in the last position of the genome, but there are some differences
+among types. The mitochondrion and chloroplast are the same. Paternally inherited cytoplasm is inherited from
+the paternal side. These are chromosomes with no recombination and hence no junctions, but they do possess 
+ancestry and may be useful.
+
+The simulator models genetic distance, probability of crossover occurrence, chromosome length is measured in 
+Morgans. This length is used as the rate of recombination in the recombination model. However it is important
+to note that the length of the chromosome represents an essentially physical map of where crossovers occur. 
+In certain circumstances, such as when modelling a PAR region (see below), the uniformity of genetic distance 
+will be altered. Any chromosomes that are not needed can be set to a length of zero. When this happens, they 
+don't recombine or accumulate junctions, and hence, don't affect the simulation, run time, or computer memory.
+
+The recombination model specifies the way recombination occurs. 
+
+Model 0 = only one crossover is allowed per chromosome. It is drawn from a uniform genetic distance with a
+rate equal to that distance.
+
 Model 1 = the number of crossovers is drawn from a Poisson distribution and chromosomes are randomly placed
-with uniform probability along the rest of the chromsome
-Model 2 = Same as model 1, but the second and additional crossovers must be spaced according to a gamma
-distributed model of crossover interference
+with uniform probability along the rest of the chromsome. The rate of the Poisson is the genetic length of
+the chromosome.
 
-Any chromosomes that are not needed can be set to a length of zero. When this happens, they don't recombine
-or accumulate junctions, and hence, don't affect the simulation, run time, or computer memory.
+Model 2 = Same as model 1, but the second and additional crossovers must be spaced according to a gamma
+distributed model of crossover interference -- This model is untested, and furthermore, additional code will
+be needed to  made the program accept parameters that alter this model.
+
+The simulator models genetic distance, probability of crossover occurrence, chromosome length is measured in 
+Morgans. This length is used as the rate of recombination in the recombination model. However it is important
+to note that the length of the chromosome represents an essentially physical map of where crossovers occur. 
+In certain circumstances, such as when modelling a PAR region (see below), the uniformity of genetic distance 
+will be altered. Any chromosomes that are not needed can be set to a length of zero. When this happens, they 
+don't recombine or accumulate junctions, and hence, don't affect the simulation, run time, or computer memory.
+
+The psuedo autosomal region is simulated by allowing only one crossover in a limited region of the X
+chromosome, and the number entered in this file tells what fraction of the X's genetic distance is to be used
+as a PAR for the recombination of the X and Y Chromsomes. If you have a 1.0 M X chromosome, and the PAR is set
+to 0.01, then for XY pairs, recombination will be restricted to one event at most in the first 1 x 0.01 = 0.01 M
+of the X and Y chromosome, if a recombinant chromsome is 
 
 
 ************************************************************************************************************
@@ -448,6 +498,26 @@ or accumulate junctions, and hence, don't affect the simulation, run time, or co
 |
 |> 1.0 1.0 1.0
 |
+************************************************************************************************************
+
+The simulator also includes phenotype modelling. All phenotypes are floating point numerical values. The
+expected phenotypes above are the expected or mean values before genetic action occurs on the phenotype. This
+will be discussed below. These can be any positive or negative decimal value.
+
+The simulator has three "hidden" phenotypes. Reproductive, Developmental, and Environemental fitness. These 
+three represent the probability of reproducing (producing a gamete during mating), surviving to reproductive 
+age, and surviving in a given environment. Each is between 0 and 1.0.
+
+Reproductive: Used as the probability to accept a parent during the pairing stage of the generation cycle.
+
+Developmental: Used to determine whether a new offspring survives after being born. This function has not been
+tested rigorously.
+
+Environmental: Determines if an individual can survive in a given environment. While this feature is programmed
+into HapHazard, the ability to define environments has not yet been added and the feature is not tested. 
+
+************************************************************************************************************
+************************************************************************************************************
 |NUMBER_OF_GENES
 |Enter the number of genes you wish to define in the experiment.
 |<integer>
@@ -466,9 +536,40 @@ or accumulate junctions, and hence, don't affect the simulation, run time, or co
 |<integer> <double> <integer> <double_list>
 |
 |Chr Pos Phen Add've_FX{by anc ... }
-|> 1 0.25 0 0.0 0.0
-|> 1 0.75 0 0.0 0.0
+|> 0 0.5 0 0.0 0.0 0.0 0.0
+|> 1 0.5 0 0.0 0.0
 |
+************************************************************************************************************
+
+The above block shows how we define genes in the simulator.
+
+First list the number of genes you are modelling so the generator knows how many to look for.
+
+Next, list the parameters that define each gene, one gene per line. The genes you define will be entered into
+an indexed list starting with the index of 0. These indices will be important in understanding how interactions
+are defined below.
+
+CHR = the chromosome the gene is on
+
+POS = the position of the gene in Morgans describing where it sits on the chromosome
+
+PHEN = the phenotype, 0 = reproductive fitness, 1 = developmental fitness, 2 = environmental fitness
+3,4,5,... etc. = custom phenotypes.
+
+Polygenic effects can be created by creating several genes that affect the same phenotype. Similarly, pleiotropic
+effects can be simulated by creating several "genes" at one locus that effect several phenotypes.
+
+ADD'VE_FX = each gene has a set of additive effects on the phenotype it affects. Here they are listed in order
+by the ancestry. Ancestry is assumed to have allelic effects on phenotypes when genes are defined. These effects
+cause deviations in the INDIVIDUAL's phenotype from the mean as specified. 
+
+IMPORTANT: The number of additive effects must match the number of ancestries. If they do not match the simulation
+will crash. In addition, the sex chromosomes have double that number because the W and Z have a distinct ancestry 
+value and thus their own effects must be defined. Note how the first gene on Chromosome 0 (the sex chromosome) has
+four additive effects listed, instead of two as on the autosomal gene on chromosome 1.
+
+************************************************************************************************************
+************************************************************************************************************
 |NUMBER_OF_INTERACTIONS
 |Indicate how many epistatic interactions you would like to model.
 |<integer>
@@ -490,6 +591,74 @@ or accumulate junctions, and hence, don't affect the simulation, run time, or co
 |Gene1 Gene2 Anc1 Anc2 MaxFX Phen Model
 |> 0 1 0 1 -0.5 0 1
 |
+************************************************************************************************************
+
+These two lines of input define how interactions among genes effect phenotypes. How we define interactions
+between ancestries at genes can affect dominance and epistasis of genetic effects.
+
+The first two numbers are the indices of the genes we want involved in the interaction. The next two numbers 
+are the ancestries involved in the interaction. 
+
+The next number describes the maximum phenotypic effect, followed by the phenotype affected, and the model of 
+interaction. The affected phenotype is the index in the list of phenotypes we created earlier. The maximum
+phenotypic effect sets the limit or often default value of the effect the interaction has on a phenotype
+but can vary depending on the model selected. The models apply the max phenotype or some fraction of it
+according to how dominance or additivity is affected by the number of possible interactions allowed in the 
+genotype.
+
+With two genes (A and B) and two ancestries (0 and 1), there are nine possible genotypes. When we consider only
+a single pairwise gene by ancestry interaction (gene A ancestry 0 by gene B ancestry 1) only four of those genotypes
+can have an interaction. They are:
+
+Genotype:	  I 		  II		 III		 IV
+Gene A:		0   1		1   0		0   0		0   0
+Interaction:	  \		  / |		  \ |		| X |	
+Gene B:		0   1		1   1		0   1		1   1
+No. Int.	  1       	  2               2		  4
+
+The lines on the middle row attempt to illustrate the interaction between the 0 ancestry of gene A, and the
+1 ancestry of gene B. Between loci their are 4 total interactions possible. The number of interactions for each
+genotype for the example scenario are listed beneath each genotype.
+
+In the above example we are creating an interaction between the first two genes, and only two genes we've 
+created that have an interaction when gene 0 has ancestry 0 and gene 1 has ancestry 1. There is a max effect of
+-0.5 set to affect the reproductive fitness phenotype (0) and the interaction model is dominant (1).
+
+If left as is, then the max effect of 0.5 would apply to genotypes I, II, III, and IV.
+
+The dominant model (1) applies the max phenotypic effect to any genotype where this interaction occurs. Thus,
+individuals with any of the genotypes (I, II, III, and IV) will have the max effect applied to their phenotype.
+
+The recessive model (0) applies the max phenotypic effect to only individuals with genotype IV, and not to any
+genotype in which the dominant interaction can "rescue" or "mask" the effect of the recessive. Genotypes I, II,
+and III will not be affected.
+
+The dominant-recessive model (2) treats the first gene we list for the interaction as dominant, and the second
+as recessive. Thus, only genotypes II and IV will have the max effect applied.
+
+The additive network model (3) applies a fraction of the max effect (E) according to the number of interactions 
+in the genotype out of the total possible. So, Genotypes I, II, III, and IV would get 1/4*E, 2/4*E, 2/4*E, and
+4/4*E respectively.
+
+These interactions can also be used to  simulate single locus phenotype models with dominance. In those cases
+you could set the interaction to occur between one gene and itself.
+
+For example:
+
+************************************************************************************************************
+************************************************************************************************************
+|
+|Gene1 Gene2 Anc1 Anc2 MaxFX Phen Model
+|> 1 1 0 0 -0.5 0 0
+|
+************************************************************************************************************
+
+Would create a gene in which the 0 ancestry is recessive to the 1 ancestry, and causes a -0.5 reduction in the
+0 Phenotype's value when it occurs. This line tells the simulator to look for an ancestry 0-0 interaction at
+gene 1's locus and apply -0.5 when only that interaction occurs.
+
+************************************************************************************************************
+************************************************************************************************************
 |SAMPLE_SIZE
 |Enter the number of individuals you would like to collect from each deme when summary statistics
 |are calculated
@@ -523,10 +692,29 @@ or accumulate junctions, and hence, don't affect the simulation, run time, or co
 |
 |END INPUT
 |
+************************************************************************************************************
+
+This last group of inputs defines the data collection routine used in the simulation.
+
+The Sample Size is straighforward. The simulator will select this number of individuals from each deme in the
+experiment when in generations in which it is set to collect data.
+
+The marker spacing tells the simulator the distance in Morgans between uniformly spaced markers. The markers are
+used to generate files tha contain genotype data for all the markers listed. The simulator does create these markers
+but the data found in the .mkr files are generated by the Perl script haphazard_makemarkers.pl.
+
+Summary generations is a list of all the generations you would like to collect data from. The simulator begins with
+generation zero and runs until T-1 generations. The last number in this list must be greater than the total number
+of generations to tell the input routine to stop looking for more sampling/summary generations.
+
+Summary stats are boolean values that were used at one point to toggle on/off summary stat calculating functions.
+Subsequently, many of these functions were replaced with post processing Perl and R scripts. However, the simulator
+stil requires these all be turned on to function properly. 
+
 
 IV. Output
 
-In this section we'll walk through the folders ant files that are generated as output by our test run named
+In this section we'll walk through the folders and files that are generated as output by our test run named
 "Homer".
 
 Let's say we ran our test run in a folder named "homer". This folder contains our executable, the
@@ -547,8 +735,6 @@ since the first generation is indexed as 0), and the extension indicates this is
 file.
 
 The clines file looks like this:
-
-
 
 ************************************************************************************************************
 ************************************************************************************************************
@@ -634,5 +820,45 @@ End = the position in Morgans at which the next junction occurs
 
 Length = the length of the ancestry block in Morgans (End - Start)
 
+Finally, there are .mkr files generated by the haphazard_makemarkers.pl script. These contain lists of ancestries
+by position for each chromosome sampled. These are also comma-delimited text and can be used in spreadsheets or
+R as data frames.
 
+Here is an example:
 
+************************************************************************************************************
+************************************************************************************************************
+Deme,Individual,Haplotype,Chromosome,Type,0.000000,0.010000,0.020000,0.030000,0.040000,0.050000,0.060000, ...
+0,0xa41b1d0,0xa34eac0,0,2,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0, ...
+0,0xa41b1d0,0xa085a40,0,2,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, ...
+0,0xa265950,0xa1c2530,0,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, ...
+0,0xa265950,0xa677e00,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, ...
+0,0xa66f778,0xa0733a0,0,2,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, ...
+0,0xa66f778,0xa527ab0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, ...
+0,0xa33d7f0,0xa65acd8,0,2,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0, ...
+0,0xa33d7f0,0xa619108,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1, ...
+0,0xa439c80,0xa4a7278,0,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1, ...
+0,0xa439c80,0xa5a7908,0,3,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, ...
+0,0xa16ae68,0xa4453a0,0,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0, ...
+0,0xa16ae68,0xa550e40,0,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0, ...
+0,0xa61a288,0xa6f7420,0,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, ...
+0,0xa61a288,0xa22c310,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, ...
+0,0xa6d40f0,0xa2b5718,0,2,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, ...
+0,0xa6d40f0,0xa5013e0,0,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, ...
+0,0xa1a5868,0xa615570,0,2,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, ...
+0,0xa1a5868,0xa4d2a48,0,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, ...
+0,0xa0f7038,0xa30bc08,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0, ...
+0,0xa0f7038,0xa0e59b0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, ...
+,,,,
+
+************************************************************************************************************
+
+The headings are:
+
+Deme: The deme the chromosome came from.
+Individual: The hexcode memory address of the individual, unique to each individual in a generation
+Haplotype: The hexcode memory address of the chromosome, unique to each chromsome generation
+Chromosome: The genomic index of the chromosome
+Type: The type of chromosome
+The remaining columns are the genetic positions along the chromsome for each marker. The ancestry is listed as the
+integer associated with the ancestry.
