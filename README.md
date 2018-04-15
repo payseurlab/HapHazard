@@ -4,7 +4,7 @@ The HapHazard genomic ancestry simulator
 
 ## Using HapHazard 
 
-**For complete installation instructions, please see the manual (Users_Manual.txt in this repository).**
+**For complete installation instructions, please see the manual (`Users_Manual.txt` in this repository).**
 
 System Requirements: 
 - Linux (we used Ubuntu 14.04 and later) 
@@ -31,5 +31,6 @@ In folder `data_processing_scripts`, the following scripts can be found:
 - `Sim_Summary.R` : Will summarize junction density distributions from across the simulation output. 
 
 In folder `run_sims_on_Condor`, the following scripts can be found: 
-- `DAG-o-RAMA.pl` : 
-- `DAG_jobs.txt` : 
+- `DAG-o-RAMA.pl` : creates a file structure to submit a number of parallel jobs on Condor. 
+- `DAG_jobs.txt` : file that designates the jobs you would like to be run in parallel. 
+- `HH_executable.sh` : Condor executable file
