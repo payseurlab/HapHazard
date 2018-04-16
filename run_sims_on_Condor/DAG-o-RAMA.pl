@@ -4,7 +4,7 @@
 #DAG-o-RAMA.pl
 
 $jobListFile = "DAG_jobs.txt";
-$runs_per_job = 1000;
+#$runs_per_job = 1000; 
 
 open DAGJOBS, $jobListFile or die "Could not open DAG jobs file $jobListFile!\n";
 @dagjobs = <DAGJOBS>; foreach (@dagjobs) { chomp $_; } close DAGJOBS;
@@ -15,7 +15,8 @@ foreach $job (@dagjobs)
 {
 	@job = split( ',' , $job);
 	$job = @job[0];
-	$memoryNeeded = @job[1];
+	$memoryNeeded = "4.5GB";
+	$runs_per_job = @job[1];
 	print MASTERDAG "SPLICE $job $job/$job.dag\n";
 	mkdir $job, 0755;
 	mkdir "$job/shared", 0755;
@@ -45,18 +46,18 @@ seed <- " . $seed . "
 input <- \"$job.inp\"
 id <- " . $i . "
 print(\"Running Simulation\")
-command <- paste(\"./JunGen4\",input,id,seed,sep=\" \")
+command <- paste(\"./HapHazard\",input,id,seed,sep=\" \")
 system(command)
 print(\"Loading simulation parameters to R-workspace...\")
 source(\"Rvars.R\")
 print(\"Running ancestry block and junction analyses...\")
-source(\"HH_BJ_1s.R\")
+#source(\"HH_BJ_1s.R\")
 print(\"Computing Hybrid Indices...\")
-source(\"HH_hybridIndex.R\")
+#source(\"HH_hybridIndex.R\")
 #print(\"Computing junction ages and frequency spectra...\")
 #source(\"HH_AgeFS.R\")
-print(\"Computing geographic clines...\")
-source(\"ClineMCMC2.R\")
+#print(\"Computing geographic clines...\")
+#source(\"ClineMCMC2.R\")
 print(\"Moving files...\")
 system(\"mv Rvars.R " . $job . "_" . $i . "/Rvars.R\")
 print(\"Tarring results folder...\")
@@ -70,27 +71,28 @@ print(\"Done\")
 		#### several of the next lines violate the format scheme for readability and so that they appear
 		### as they will in the file being printed to...
 		print SUBMITFILE"universe = vanilla
-executable = chtcjobwrapper
+executable = HH_executable.sh
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
-transfer_input_files = ../../shared/, ../shared/, run_hap_hazard.R
-arguments = --type=R --version=sl5-R-3.1.0 --cmdtorun=run_hap_hazard.R --unique=\$(Cluster)\.\$(Process) --
+transfer_input_files = ../../shared/, ../shared/, run_hap_hazard.R, http://proxy.chtc.wisc.edu/SQUID/mfrayer/SLIBS.tar.gz
+#arguments = --type=R --version=sl5-R-3.1.0 --cmdtorun=run_hap_hazard.R --unique=\$(Cluster)\.\$(Process) --
 requirements = (OpSysMajorVer =?= 6)
-+R = \"sl5-R-3.1.0\"
+#+R = \"sl5-R-3.1.0\"
 output = \$(Cluster)\.\$(Process).out
 error = \$(Cluster)\.\$(Process).err
 log = \$(Cluster)\.\$(Process).log
 request_cpus = 1
 request_memory = " . $memoryNeeded . "
 request_disk = 500000
-Initialdir = " . $job . "/" . $job . "_$i/\n";
-#+wantFlocking = true\n";
+Initialdir = " . $job . "/" . $job . "_$i/\n
++wantGlidein = true
++wantFlocking = true\n";
 #Initialdir = " . $job . "_" . $i . "/" . $job . "_$i\n";
 
-		if($memoryNeeded <= 2000)
-		{
-			print SUBMITFILE "+wantGlideIn = true\n";
-		}
+	#	if($memoryNeeded <= 2000)
+	#	{
+	#		print SUBMITFILE "+wantGlideIn = true\n";
+	#	}
 
 		print SUBMITFILE "queue 1";
 
