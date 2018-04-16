@@ -71,7 +71,7 @@ print(\"Done\")
 		#### several of the next lines violate the format scheme for readability and so that they appear
 		### as they will in the file being printed to...
 		print SUBMITFILE"universe = vanilla
-executable = test_executable.sh
+executable = HH_executable.sh
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 transfer_input_files = ../../shared/, ../shared/, run_hap_hazard.R, http://proxy.chtc.wisc.edu/SQUID/mfrayer/SLIBS.tar.gz
