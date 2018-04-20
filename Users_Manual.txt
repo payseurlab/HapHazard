@@ -50,10 +50,18 @@ Installation:
 
 3. Compile the program from source using the g++ compiler and linking GSL using the command:
 		$ g++ -L/usr/local/lib main.cpp -o HapHazard -lgsl -lgslcblas -lm -std=c++11
-	The link command -L/usr/local/lib links the compilation to gsl's default installation. If 
-	you've chosen to install it elsewhere change this command appropriately. This command 
-	should produce an executable file named 'HapHazard'. We also recommend using the c++11
-	standard to compile the simulator.
+	
+    This command should produce an executable file named 'HapHazard'.  
+    The link command -L/usr/local/lib links the compilation to gsl's default installation. A 
+    common error occurs when the compiler fails to find the gsl library, usually a '.lib.so'
+    file. If you receive an error indicating this, a simple fix is to alter the LD_LIBRARY_PATH
+    variable by using the commands:
+		
+		$ LD_LIBRARY_PATH=/usr/local/lib
+		$ export LD_LIBRARY_PATH
+	
+     We also recommend using the c++11 standard to compile the simulator, using -std=c++11. Using
+     other standards has resulted in aberrant or unreadable output file formats.
 
 Setting your First (Test) Run
 
