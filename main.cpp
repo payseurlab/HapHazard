@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
     int d = 0;
     for( int d ; d < rvar_number_of_demes ; d++ )
     {
-        if( d = rvar_number_of_demes )
+        if( d == rvar_number_of_demes )
         {
             r_vars << d << ") " << std::endl;
         }
