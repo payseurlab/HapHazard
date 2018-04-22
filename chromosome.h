@@ -70,10 +70,10 @@ class Chromosome
         // Getters
         CNode* getLeftEnd() { return m_left_end; }
         CNode* getRightEnd() { return m_right_end; }
-        virtual double getLength() {};
+        virtual double getLength() {return m_length; }
         virtual ChrType getType() { return m_type; }
-        virtual int getNumber() {};
-        virtual double getParB() {};
+        virtual int getNumber() { return m_number; }
+        virtual double getParB() { return s_par_boundary; }
         int* getLocation() { return m_location;}
 
         // Biological functions
