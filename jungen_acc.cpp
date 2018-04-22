@@ -72,7 +72,7 @@ std::vector<int> change_base(int x, int base, int num_digits)
         ++i;
     } while ( pow(base, i) <= x );
 
-    for( num_digits ; num_digits > i ; num_digits-- )
+    for( int nd = num_digits ; nd > i ; nd-- )
     {
         new_number.push_back(0);
     }
