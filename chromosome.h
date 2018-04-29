@@ -61,7 +61,7 @@ class Chromosome
         Chromosome(CNode * left, CNode * right, int* loc, int n, double l, ChrType t);
 
         // Chromosome destructor prototype
-        ~Chromosome();
+        virtual ~Chromosome();
 
         // Setters
         CNode* setLeftEnd(CNode* c) { m_left_end = c; return m_left_end; }
@@ -70,15 +70,15 @@ class Chromosome
         // Getters
         CNode* getLeftEnd() { return m_left_end; }
         CNode* getRightEnd() { return m_right_end; }
-        virtual double getLength() {return m_length; }
-        virtual ChrType getType() { return m_type; }
-        virtual int getNumber() { return m_number; }
-        virtual double getParB() { return s_par_boundary; }
+        virtual double getLength() { return -1;}
+        virtual ChrType getType() { return A; }
+        virtual int getNumber() { return -1; }
+        virtual double getParB() { return -1; }
         int* getLocation() { return m_location;}
 
         // Biological functions
-        virtual Chromosome* duplicateChr(int* l) {};
-        virtual int positionAnc(double p) {};  // return the ancestry at a position p (any position)
+        virtual Chromosome* duplicateChr(int* l) { return 0; }
+        virtual int positionAnc(double p) { return -1; }  // return the ancestry at a position p (any position)
 
         // Summary Statistic Calcuators
         int calcNumJunctions();
@@ -110,10 +110,10 @@ class Chromosome
     protected:
         CNode* m_left_end;      // pointer to the left end node
         CNode* m_right_end;     // pointer to the right end node
-        double m_length;        // the length of the chromosome
-        ChrType m_type;         // the type of the chromosome (X, Y, A etc.)
         int m_number;           // the genomic index
-        int* m_location;        // the deme THIS chromosome resides in
+        double m_length;        // the length of the chromosome
+	ChrType m_type;         // the type of the chromosome (X, Y, A etc.)	
+	int* m_location;        // the deme THIS chromosome resides in
 };
 
 // CHROMOSOME CONSTRUCTOR

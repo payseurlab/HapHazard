@@ -78,6 +78,11 @@ class Experiment
     private:
         int m_number_of_simulations;
         int m_sim_number;
+
+	// Need Filenames for I/O
+        // Input
+        const char* m_INPUTFILE;
+
         const char* m_job_id;
         int m_number_of_generations;
 
@@ -117,10 +122,6 @@ class Experiment
 
         // The metapop
         MetaPop* m_hap_hazard;
-
-        // Need Filenames for I/O
-        // Input
-        const char* m_INPUTFILE;
 
         // Output
         // SETUP FILE STREAMS FOR OUTPUT
@@ -524,7 +525,7 @@ void Experiment::makeMarkers(double s)
             length = m_chromosome_lengths[i];
         }
 
-        double currPosition = 0;
+        
         for(double j = 0 ; j <= length ; j += s)
         {
             Marker* newMarker = new Marker(i, j, m_chromosome_types[i]);
@@ -1017,7 +1018,7 @@ void Experiment::fileInput()
 
     //std::cout << "Please enter the integers identifying the generations at which you would like to collect summaries. <integer>:" << std::endl;
     //std::cout << "Enter a negative number or a number beyond the range of the total number of generations to quit." << std::endl;
-    m_summary_generations;
+
     int summaryInt = 0;
 
     while( summaryInt >= 0 && summaryInt <= m_number_of_generations )

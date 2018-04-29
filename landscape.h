@@ -93,10 +93,11 @@ Landscape::Landscape( int p, double a, int na, std::vector<Gene*> l, std::vector
     {
         std::vector<int> key; // store the key we generate
         std::vector<int>::iterator iter_c; // iterate over the counter
+	iter_c = counter.begin();
         std::vector<Gene*>::iterator iter_l; // iterate over loci
 
         // iterate over the loci, and the positions in the key simultaneously
-        for(  iter_l = m_loci.begin(), iter_c = counter.begin() ; iter_l < m_loci.end(), iter_c < counter.end() ; iter_l++, iter_c++)
+        for(  iter_l = m_loci.begin() ; iter_l < m_loci.end() ; iter_l++ )
         {
             int c = *iter_c;
             std::vector<int> d = (**iter_l).getGenotype(c); // get the genotype value for the locus using the current index of the counter
@@ -107,6 +108,7 @@ Landscape::Landscape( int p, double a, int na, std::vector<Gene*> l, std::vector
             {
                 key.push_back( *iter_d );
             }
+	    iter_c++;
 
         }
 

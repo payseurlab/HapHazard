@@ -11,7 +11,7 @@ class Autosome : public Chromosome
     public:
         Autosome(CNode* cen, CNode* tel, int* loc, int n, double l, ChrType t);
         Autosome(Autosome& a);
-        //virtual ~Autosome();
+        virtual ~Autosome();
 
         // getters
         int virtual getNumber() { return m_number; }
@@ -44,6 +44,11 @@ Autosome::Autosome(CNode * cen, CNode * tel, int* loc, int n, double l, ChrType 
 
 }
 
+// CHROMOSOME DESTRUCTOR
+Autosome::~Autosome()
+{
+  
+}
 
 
 // DUPLICATE AN AUTOSOME TO BE INHERITED

@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
     const char* INPUT_FILE_NAME = argv[1];       // the first arg is the input file's name
     const char* EXPERIMENT_NUMBER = argv[2];     // the second is the number for the experiment
     const char* RNG_SEED = argv[3];              // the third is the seed value for the random number generator
-    Experiment hap_hazard(argv[1], argv[2], argv[3]);   // pass the args to the experiment constuctor
+    Experiment hap_hazard(INPUT_FILE_NAME, EXPERIMENT_NUMBER, RNG_SEED);   // pass the args to the experiment constuctor
 
     // Run the experiment
     hap_hazard.experimentRun();
@@ -179,8 +179,8 @@ int main(int argc, char* argv[])
     // now the indices for the demes
     int rvar_number_of_demes = hap_hazard.getNumDemes();
     r_vars << "demes=c(";
-    int d = 0;
-    for( int d ; d < rvar_number_of_demes ; d++ )
+    
+    for( int d = 0 ; d < rvar_number_of_demes ; d++ )
     {
         if( d == rvar_number_of_demes )
         {
@@ -194,8 +194,8 @@ int main(int argc, char* argv[])
 
     // the "junction demes" are the demes we are going to collect data for
     r_vars << "junction_demes=c(";
-    d = 0;
-    for( d ; d < rvar_number_of_demes ; d++ )
+    
+    for( int d = 0 ; d < rvar_number_of_demes ; d++ )
     {
         if( d == rvar_number_of_demes - 1 )
         {
