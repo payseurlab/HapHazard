@@ -1,6 +1,0 @@
-#!/bin/sh
-echo "Running Hap_Hazard"
-./JunGen4 $1 $2 $3
-perl haphazard_makemarkers.pl
-tar -cvzf Homer.tar.gz *
-echo "Done"
