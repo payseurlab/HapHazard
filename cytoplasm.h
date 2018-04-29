@@ -11,7 +11,7 @@ class Cytoplasm : public Chromosome
     public:
         Cytoplasm(CNode* cen, CNode* tel, int* loc, int n, double l, ChrType t);
         Cytoplasm(Cytoplasm& a);
-        //virtual ~Cytoplasm();
+        virtual ~Cytoplasm();
 
         // getters
         double virtual getParB() { return 0.0; }
@@ -45,6 +45,12 @@ Cytoplasm::Cytoplasm(CNode * cen, CNode * tel, int* loc, int n, double l, ChrTyp
 // CHROMOSOME COPY CONSTRUCTOR
 Cytoplasm::Cytoplasm(Cytoplasm& a):
     Chromosome(a)
+{
+
+}
+
+// CYTOPLASM DESTRUCTOR
+Cytoplasm::~Cytoplasm()
 {
 
 }

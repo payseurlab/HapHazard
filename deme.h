@@ -81,12 +81,13 @@ Deme::Deme(int s, std::vector<double> a, int l, std::vector<Gamete*> gP):
     // to the propotion of ancestry given... the ancestries are chosen randomly from
     // a multinomial distribution according to the proportions
     unsigned int n[s_num_anc];
+
     gsl_ran_multinomial(s_rand_num, s_num_anc, m_size, &m_anc_prop[0], n);
     m_gen = g_generation;
 
     for( int i = 0 ; i < s_num_anc ; i++ )
     {
-        for(int j = 0 ; j <= n[i] ; j++ )
+        for(unsigned int j = 0 ; j <= n[i] ; j++ )
         {
             // Depending on the mating system required, we choose gametes from the pure populations
             // and creat new individuals

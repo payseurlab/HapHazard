@@ -48,14 +48,14 @@ class IntGraph
 
 
     protected:
-        double m_max_sel;           // The maximum allowed effect on the phenotype (usually fitness, hence max_sel)
-        Gene* m_locus_a;            // A pointer to the first gene in the pair
-        Gene* m_locus_b;            // A pointer to the second gene in the pair
-        int m_anc_a;                // the ancestry at locus a that effects the interation
-        int m_anc_b;                // the ancestry at the second locus ...
+	int m_phenotype;            // the phenotype the interaction impacts	
+	Gene* m_locus_a;            // A pointer to the first gene in the pair
+        Gene* m_locus_b;            // A pointer to the second gene in the pair	
+	int m_anc_a;                // the ancestry at locus a that effects the interation
+	int m_anc_b;                // the ancestry at the second locus ...        	
+	double m_max_sel;           // The maximum allowed effect on the phenotype (usually fitness, hence max_sel)
         int m_edge_fx;              // the type of the effect of the interaction (edge)
         std::map<std::string, int> m_graph;   // a map between the genotypes and the number of edges they incur based on the model
-        int m_phenotype;            // the phenotype the interaction impacts
         bool m_y_chromosome;        // whether or not the Y chromsome impacts the edge
 };
 

@@ -137,10 +137,10 @@ Individual::Individual(Gamete* mat_gamete, Gamete* pat_gamete, int l, bool m = f
     // iterate over both gametes' chromosomes simultaneously and check for sex chromosome types
     std::vector<Chromosome*>::iterator iter_g1;
     std::vector<Chromosome*>::iterator iter_g2;
-
+    iter_g2 = gam2.begin();
     m_sex = -1;
 
-    for( iter_g1 = gam1.begin() , iter_g2 = gam2.begin() ; iter_g1 < gam1.end() - 1, iter_g2 < gam2.end() - 1 ; iter_g1++, iter_g2++ )
+    for( iter_g1 = gam1.begin() ; iter_g1 < gam1.end() - 1 ; iter_g1++ )
     {
         ChrType chromo_type_one = (**iter_g1).getType();
         ChrType chromo_type_two = (**iter_g2).getType();
@@ -167,7 +167,7 @@ Individual::Individual(Gamete* mat_gamete, Gamete* pat_gamete, int l, bool m = f
 
         m_genome.push_back(new_chr_one);
         m_genome.push_back(new_chr_two);
-
+	iter_g2++;
     }
 
     ChrType cytoplasm_type = (**iter_g1).getType();

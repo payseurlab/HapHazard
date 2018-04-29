@@ -14,6 +14,8 @@ class SexChromosome : public Chromosome
         SexChromosome(CNode * left, CNode * right, int* loc, int n, double l, ChrType t);
         // copy constructor
         SexChromosome(SexChromosome& s);
+	// destructor
+	virtual ~SexChromosome();
 
         // getters
         double virtual getParB() { return s_par_boundary; }
@@ -44,6 +46,12 @@ SexChromosome::SexChromosome(CNode * cen, CNode * tel, int* loc, int n, double l
 // CHROMOSOME COPY CONSTRUCTOR
 SexChromosome::SexChromosome(SexChromosome& a):
     Chromosome(a)
+{
+
+}
+
+// SEX CHROMOSOME DESTRUCTOR
+SexChromosome::~SexChromosome()
 {
 
 }
