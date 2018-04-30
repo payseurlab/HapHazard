@@ -7,7 +7,7 @@ The HapHazard genomic ancestry simulator
 **For complete installation instructions, please see the manual (`Users_Manual.txt` in this repository).**
 
 System Requirements: 
-- Linux (we used Ubuntu 14.04 and later) 
+- Linux (Strongly recommended, we used Ubuntu 14.04 and later) 
 - Cygwin (if using Windows)
 - 2GB of RAM (at least)
 
@@ -19,8 +19,8 @@ Installation:
 1. Download the repository. 
 2. Navigate to the folder in the terminal. 
 3. Compile the program from source using the g++ compiler and linking GSL using the command: 
-  `$ g++ -L/usr/local/lib main.cpp -o HapHazard -lgsl -lgslcblas -lm` 
- 
+  `$ g++ -L/usr/local/lib main.cpp -o HapHazard -lgsl -lgslcblas -lm -std=c++11`
+4. To run your first simulations see Users_Manual.txt for further instruction.
 
 ## Contents 
 
