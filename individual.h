@@ -137,10 +137,10 @@ Individual::Individual(Gamete* mat_gamete, Gamete* pat_gamete, int l, bool m = f
     // iterate over both gametes' chromosomes simultaneously and check for sex chromosome types
     std::vector<Chromosome*>::iterator iter_g1;
     std::vector<Chromosome*>::iterator iter_g2;
-    iter_g2 = gam2.begin();
+
     m_sex = -1;
 
-    for( iter_g1 = gam1.begin() ; iter_g1 < gam1.end() - 1 ; iter_g1++ )
+    for( iter_g1 = gam1.begin() , iter_g2 = gam2.begin() ; iter_g1 < gam1.end() - 1, iter_g2 < gam2.end() - 1 ; iter_g1++, iter_g2++ )
     {
         ChrType chromo_type_one = (**iter_g1).getType();
         ChrType chromo_type_two = (**iter_g2).getType();
@@ -167,7 +167,7 @@ Individual::Individual(Gamete* mat_gamete, Gamete* pat_gamete, int l, bool m = f
 
         m_genome.push_back(new_chr_one);
         m_genome.push_back(new_chr_two);
-	iter_g2++;
+
     }
 
     ChrType cytoplasm_type = (**iter_g1).getType();
@@ -192,6 +192,12 @@ Individual::Individual(Gamete* mat_gamete, Gamete* pat_gamete, int l, bool m = f
             m_genome.push_back(new_cyto);
             break;
         }
+	default:
+	{
+	    std::cout << "Non-cytoplamic chromosome where cytoplasm required.\n" << std::endl;
+	    exit(1);
+	    break;
+	}
 
     }
 
@@ -322,7 +328,7 @@ Gamete* Individual::makeGamete()
     ChrType c_type1;
     ChrType c_type2;
 
-    for ( int i = 0 ; i < m_genome.size() ; i++ )
+    for ( unsigned int i = 0 ; i < m_genome.size() ; i++ )
     {
 
         if ( i % 2 != 0 )
@@ -856,7 +862,7 @@ double Individual::phenotype(std::vector<Chromosome*> g, Landscape* l)
     for( iter_g = genes.begin() ; iter_g < genes.end() ; iter_g++ )
     {
 
-        int chr =  (**iter_g).getChr() * 2;
+        unsigned int chr =  (**iter_g).getChr() * 2;
         double pos =  (**iter_g).getPos();
 
         int anc_one = (*g[ chr     ] ).positionAnc(pos);

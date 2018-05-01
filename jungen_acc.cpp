@@ -72,7 +72,7 @@ std::vector<int> change_base(int x, int base, int num_digits)
         ++i;
     } while ( pow(base, i) <= x );
 
-    for( num_digits ; num_digits > i ; num_digits-- )
+    for( int nd = num_digits ; nd > i ; nd-- )
     {
         new_number.push_back(0);
     }
@@ -255,10 +255,9 @@ std::vector<Gamete*> ZWgametePool(int anc, std::vector<double> lengths, std::vec
 
         std::vector<ChrType>::iterator iter_t;
         std::vector<double>::iterator iter_l;
-	iter_l = lengths.begin();
         chr_n++;
 
-        for(iter_t = types.begin() ; iter_t < types.end() ; iter_t++ )
+        for(iter_t = types.begin(), iter_l = lengths.begin() ; iter_t < types.end() , iter_l < lengths.end() ; iter_t++, iter_l++ )
         {
             cen = new ( Junction::s_newAddyAssign() ) Junction(chr_n, 0, i);
             Junction::s_junction_pool.push_back(cen);
@@ -294,7 +293,6 @@ std::vector<Gamete*> ZWgametePool(int anc, std::vector<double> lengths, std::vec
             chr_pool.push_back(new_chr);
 
             chr_n++;
-	    iter_l++;
         }
 
         std::vector<Chromosome*> female_Genome;
@@ -336,10 +334,11 @@ std::vector<Gamete*> HHgametePool(int anc, std::vector<double> lengths, std::vec
 
         std::vector<ChrType>::iterator iter_t;
         std::vector<double>::iterator iter_l;
-	iter_l = lengths.begin();        
-	chr_n++;
+        chr_n++;
 
-        for(iter_t = types.begin() ; iter_t < types.end() ; iter_t++)
+
+
+        for(iter_t = types.begin(), iter_l = lengths.begin() ; iter_t < types.end() , iter_l < lengths.end() ; iter_t++, iter_l++ )
         {
             Junction* cen = new Junction(chr_n, 0, i);
             Junction* tel = new Junction(chr_n, *iter_l, i);
@@ -368,7 +367,6 @@ std::vector<Gamete*> HHgametePool(int anc, std::vector<double> lengths, std::vec
             chr_pool.push_back(new_chr);
 
             chr_n++;
-	    iter_l++;
         }
 
         std::vector<Chromosome*> female_Genome;
